@@ -21,5 +21,5 @@ def connectDrone():
     vehicle = connect(connection_string, wait_ready=True)
     return vehicle
 
-vehicle = connectDrone()
 
+vehicle = connectDrone()
