@@ -5,3 +5,10 @@ import exceptions
 import math
 import argparse
 
+def connectDrone():
+
+    parser = argparse.ArgumentParser(description='commands')
+    parser.add_argument('--connect')
+    args = parser.parse_args()
+
+    connection_string = args.connect
