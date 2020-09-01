@@ -71,7 +71,7 @@ def connectDB():
 
 # vehicle = connectDrone()
 cursor  = connectDB()
-exe = """SELECT mission_id,date, "time", launch_mode FROM public.accounts_mission WHERE vda = 'UAE-DR-0001' AND mission_status = 'On Schedule' """
+exe = """SELECT mission_id,date, "time", launch_mode FROM public.accounts_mission WHERE vda = 'UAE-DR-0001' AND mission_status = 'On Schedule' ORDER BY date asc, "time" asc """
 cursor.execute(exe)
 tmplist = cursor.fetchall()
 for i in tmplist:
