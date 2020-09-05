@@ -71,7 +71,7 @@ def connectDB():
     return curr
 
 
-def executeMission(coords,mode,):
+def executeMission(coords,mode):
     vehicle = connectDrone()
     wphome = vehicle.location.global_relative_frame
 
