@@ -8,7 +8,7 @@ import psycopg2
 from pymavlink import mavutil
 import os
 
-manual = ['M000007']
+manual = []
 auto = []
 next_date = None
 next_time = None
@@ -64,11 +64,11 @@ def takeoff(targetH):
 
 
 def connectDB():
-    #con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
-                           #host=os.environ.get('DB_HOST'), port=os.environ.get('DB_PORT'))
+    con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
+                           host=os.environ.get('DB_HOST'), port=os.environ.get('DB_PORT'))
 
-    con = psycopg2.connect(database='postgres', user='postgres', password='123456',
-                       host='127.0.0.1', port='5432')
+    #con = psycopg2.connect(database='postgres', user='postgres', password='123456',
+                       #host='127.0.0.1', port='5432')
     curr = con.cursor()
     return curr
 
@@ -76,31 +76,48 @@ def connectDB():
 def executeMission(coords,mode):
     vehicle = connectDrone()
     wphome = vehicle.location.global_relative_frame
+    if (mode == 2):
+        cmd0 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0)
+        cmd01 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,0,0,0,0,0,0,0)
+        cmd1 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,wphome.lat,wphome.lon,wphome.alt)
+        cmd2 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,coords[0],coords[1],wphome.alt)
+        cmd3 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,coords[2],coords[3],wphome.alt)
+        cmd4 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,coords[4],coords[5],wphome.alt)
+        cmd5 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,coords[6],coords[7],wphome.alt)
+        cmd6 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,0,0,0,0,0,0,0,0,0)
+        cmds = vehicle.commands
+        cmds.download()
+        cmds.wait_ready()
 
+        cmds.clear()
+        cmds.add(cmd1)
+        cmds.add(cmd2)
+        cmds.add(cmd0)
+        cmds.add(cmd3)
+        cmds.add(cmd4)
+        cmds.add(cmd5)
+        cmds.add(cmd2)
+        cmds.add(cmd01)
+        cmds.add(cmd6)
+
+        cmds.upload()
+
+    takeoff(15)
+    vehicle.mode = VehicleMode("AUTO")
+    while vehicle.mode!='AUTO':
+        time.sleep(0.2)
+    while vehicle.location.global_relative_frame.alt >2:
+        print("Mission executing")
+        time.sleep(2)
+    
 
 # vehicle = connectDrone()
-#cursor = connectDB()
-#exe = """SELECT mission_id,date, "time", launch_mode FROM public.accounts_mission WHERE vda = 'UAE-DR-0001' AND mission_status = 'On Schedule' ORDER BY date asc, "time" asc """
-# cursor.execute(exe)
-#tmplist = cursor.fetchall()
-# for i in tmplist:
-#    if (i[3] == 'AUTO'):
-#        auto.append(i[0])
-#    else:
-#        manual.append(i[0])
-#print(auto, manual)
-# vehicle.wait_ready('autopilot_version')
-# print(vehicle.is_armable)
-# while vehicle.is_armable != True :
-# print("waiting for Arming")
-# time.sleep(1)
-# print("Vehicle now armable")
-# vehicle.mode = VehicleMode("GUIDED")
-# while vehicle.mode != 'GUIDED':
-# print("Waiting")
-# time.sleep(1)
-# print(vehicle.mode)
-# vehicle.close()
+cursor = connectDB()
+exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
+cursor.execute(exe)
+tmplist = cursor.fetchall()[0][0]
+manual.append(tmplist)
+
 while True:
     if (len(manual) == 0 and len(auto) == 0):
         print("Wating")
@@ -122,6 +139,9 @@ while True:
             coordinates.append(tmplist[i])
             pass
         print(coordinates[0])
+        executeMission(coordinates,mode)
 
     elif (len(auto) != 0):
         pass
+
+    
