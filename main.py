@@ -64,9 +64,11 @@ def takeoff(targetH):
 
 
 def connectDB():
-    con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
-                           host=os.environ.get('DB_HOST'), port=os.environ.get('DB_PORT'))
+    #con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
+                           #host=os.environ.get('DB_HOST'), port=os.environ.get('DB_PORT'))
 
+    con = psycopg2.connect(database='postgres', user='postgres', password='123456',
+                       host='127.0.0.1', port='5432')
     curr = con.cursor()
     return curr
 
