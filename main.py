@@ -8,7 +8,7 @@ import psycopg2
 from pymavlink import mavutil
 import os
 
-manual = ['M000006']
+manual = ['M000007']
 auto = []
 next_date = None
 next_time = None
