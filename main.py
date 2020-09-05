@@ -71,7 +71,7 @@ def connectDB():
     return curr
 
 
-def executeMission():
+def executeMission(coords,mode,):
     vehicle = connectDrone()
     wphome = vehicle.location.global_relative_frame
 
@@ -79,9 +79,9 @@ def executeMission():
 # vehicle = connectDrone()
 #cursor = connectDB()
 #exe = """SELECT mission_id,date, "time", launch_mode FROM public.accounts_mission WHERE vda = 'UAE-DR-0001' AND mission_status = 'On Schedule' ORDER BY date asc, "time" asc """
-#cursor.execute(exe)
+# cursor.execute(exe)
 #tmplist = cursor.fetchall()
-#for i in tmplist:
+# for i in tmplist:
 #    if (i[3] == 'AUTO'):
 #        auto.append(i[0])
 #    else:
@@ -103,19 +103,23 @@ while True:
     if (len(manual) == 0 and len(auto) == 0):
         print("Wating")
         time.sleep(3)
-    
+
     elif (len(manual) != 0):
-        
+
         mission = manual.pop(0)
         coordinates = []
         cursor = connectDB()
-        exe = """SELECT * FROM public.accounts_mission WHERE mission_id = '""" + str(mission) + "'"
+        exe = """SELECT * FROM public.accounts_mission WHERE mission_id = '""" + \
+            str(mission) + "'"
         print(exe)
         cursor.execute(exe)
         tmplist = cursor.fetchall()[0]
-        #print(len(tmplist))
+        # print(len(tmplist))
         mode = tmplist[1]
-        for i in range(18,26,1):
+        for i in range(18, 26, 1):
             coordinates.append(tmplist[i])
             pass
         print(coordinates[0])
+
+    elif (len(auto) != 0):
+        pass
