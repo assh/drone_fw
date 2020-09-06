@@ -124,8 +124,8 @@ manual.append(tmplist)
 
 while True:
     if (len(manual) == 0 and len(auto) == 0):
-        print("Wating")
-        time.sleep(60)
+        print("Waiting")
+        time.sleep(10)
 
     elif (len(manual) != 0):
 
