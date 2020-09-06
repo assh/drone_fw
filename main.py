@@ -103,7 +103,7 @@ def executeMission(coords,mode):
 
         cmds.upload()
 
-    #takeoff(15)
+    takeoff(15)
     vehicle.mode = VehicleMode("AUTO")
     while vehicle.mode!='AUTO':
         time.sleep(0.2)
@@ -142,9 +142,10 @@ while True:
         mode = tmplist[1]
         print(mode)
         for i in range(18, 26, 1):
+            
             coordinates.append(tmplist[i])
         for j in range(8):
-            
+            print(coordinates[j])
             coord.append(coordinates[j])
         print(coord)
         executeMission(coord,mode)
