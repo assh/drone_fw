@@ -154,6 +154,9 @@ while True:
         exe = """UPDATE public.accounts_mission SET launch_now = false, mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
         print(exe)
         cursor.execute(exe)
+        exe = """DELETE FROM public.accounts_launch WHERE mission = '""" + str(mission) + "'"
+        print(exe)
+        cursor.commit()
         con.commit()
     elif (len(auto) != 0):
         pass
