@@ -111,7 +111,7 @@ def executeMission(coords,mode):
         print("Mission executing")
         time.sleep(2)
     
-vehicle = connectDrone()
+#vehicle = connectDrone()
 #print(vehicle.battery)
 con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
                            host=os.environ.get('DB_HOST'), port=os.environ.get('DB_PORT'))
@@ -147,16 +147,15 @@ while True:
             
             coordinates.append(tmplist[i])
         for j in range(8):
-            print(coordinates[j])
             coord.append(coordinates[j])
         print(coord)
-        executeMission(coord,mode)
+        #executeMission(coord,mode)
         exe = """UPDATE public.accounts_mission SET launch_now = false, mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
         print(exe)
         cursor.execute(exe)
         exe = """DELETE FROM public.accounts_launch WHERE mission = '""" + str(mission) + "'"
         print(exe)
-        cursor.commit()
+        cursor.execute(exe)
         con.commit()
     elif (len(auto) != 0):
         pass
