@@ -151,6 +151,8 @@ while True:
         executeMission(coord,mode)
         exe = """UPDATE public.accounts_mission SET launch_now = false, mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
         print(exe)
+        cursor.execute(exe)
+        
     elif (len(auto) != 0):
         pass
 
