@@ -146,7 +146,7 @@ while True:
         for j in range(8):
             
             coord.append(coordinates[j])
-        print(coord[])
+        print(coord)
         executeMission(coord,mode)
 
     elif (len(auto) != 0):
