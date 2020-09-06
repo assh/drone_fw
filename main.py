@@ -8,7 +8,7 @@ import psycopg2
 from pymavlink import mavutil
 import os
 
-manual = []
+manual = ['M001207']
 auto = []
 next_date = None
 next_time = None
@@ -74,7 +74,7 @@ def connectDB():
 
 
 def executeMission(coords,mode):
-    vehicle = connectDrone()
+    #vehicle = connectDrone()
     wphome = vehicle.location.global_relative_frame
     if (mode == 2):
         cmd0 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0)
@@ -110,35 +110,38 @@ def executeMission(coords,mode):
         print("Mission executing")
         time.sleep(2)
     
-
-# vehicle = connectDrone()
-cursor = connectDB()
-exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
-cursor.execute(exe)
-tmplist = cursor.fetchall()[0][0]
-manual.append(tmplist)
+vehicle = connectDrone()
+print(vehicle.battery)
+#cursor = connectDB()
+#exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
+#cursor.execute(exe)
+#tmplist = cursor.fetchall()[0][0]
+#print(tmplist)
+#manual.append(tmplist)
 
 while True:
     if (len(manual) == 0 and len(auto) == 0):
         print("Wating")
-        time.sleep(3)
+        time.sleep(60)
 
     elif (len(manual) != 0):
 
         mission = manual.pop(0)
-        coordinates = []
-        cursor = connectDB()
-        exe = """SELECT * FROM public.accounts_mission WHERE mission_id = '""" + \
-            str(mission) + "'"
-        print(exe)
-        cursor.execute(exe)
-        tmplist = cursor.fetchall()[0]
+        print(mission)
+        coordinates=[25.351153,55.388386,25.351231,55.388788,25.350955,55.388976,25.350873,55.388606]
+        #coordinates = []
+        #cursor = connectDB()
+        #exe = """SELECT * FROM public.accounts_mission WHERE mission_id = '""" + \
+        #    str(mission) + "'"
+        #print(exe)
+        #cursor.execute(exe)
+        #tmplist = cursor.fetchall()[0]
         # print(len(tmplist))
-        mode = tmplist[1]
-        for i in range(18, 26, 1):
-            coordinates.append(tmplist[i])
-            pass
-        print(coordinates[0])
+        mode = 2 #tmplist[1]
+        #for i in range(18, 26, 1):
+        #    coordinates.append(tmplist[i])
+
+        print(coordinates)
         executeMission(coordinates,mode)
 
     elif (len(auto) != 0):
