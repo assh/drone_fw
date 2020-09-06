@@ -77,6 +77,7 @@ def executeMission(coords,mode):
     #vehicle = connectDrone()
     wphome = vehicle.location.global_relative_frame
     if (mode == 2):
+
         cmd0 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0)
         cmd01 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,0,0,0,0,0,0,0)
         cmd1 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,wphome.lat,wphome.lon,wphome.alt)
@@ -142,10 +143,10 @@ while True:
         print(mode)
         for i in range(18, 26, 1):
             coordinates.append(tmplist[i])
-        for j in coordinates:
-
-            coord.append(j)
-        print(coord)
+        for j in range(8):
+            
+            coord.append(coordinates[j])
+        print(coord[])
         executeMission(coord,mode)
 
     elif (len(auto) != 0):
