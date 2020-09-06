@@ -139,6 +139,7 @@ while True:
         tmplist = cursor.fetchall()[0]
         #print(len(tmplist))
         mode = tmplist[1]
+        print(mode)
         for i in range(18, 26, 1):
             coordinates.append(tmplist[i])
         for j in coordinates:
