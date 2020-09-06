@@ -111,18 +111,23 @@ def executeMission(coords,mode):
         print("Mission executing")
         time.sleep(2)
     
-#vehicle = connectDrone()
-#print(vehicle.battery)
+vehicle = connectDrone()
+print(vehicle.battery)
 con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
                            host=os.environ.get('DB_HOST'), port=os.environ.get('DB_PORT'))
 cursor = con.cursor()
-exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
-cursor.execute(exe)
-tmplist = cursor.fetchall()[0][0]
-print(tmplist)
-manual.append(tmplist)
+
 
 while True:
+    try:
+        exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
+        cursor.execute(exe)
+        tmplist = cursor.fetchall()[0][0]
+        print(tmplist)
+        manual.append(tmplist)
+    except:
+        continue
+
     if (len(manual) == 0 and len(auto) == 0):
         print("Waiting")
         time.sleep(10)
@@ -149,7 +154,7 @@ while True:
         for j in range(8):
             coord.append(coordinates[j])
         print(coord)
-        #executeMission(coord,mode)
+        executeMission(coord,mode)
         exe = """UPDATE public.accounts_mission SET launch_now = false, mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
         print(exe)
         cursor.execute(exe)
