@@ -8,7 +8,7 @@ import psycopg2
 from pymavlink import mavutil
 import os
 
-manual = ['M001207']
+manual = []#['M001207']
 auto = []
 next_date = None
 next_time = None
@@ -112,12 +112,12 @@ def executeMission(coords,mode):
     
 vehicle = connectDrone()
 print(vehicle.battery)
-#cursor = connectDB()
-#exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
-#cursor.execute(exe)
-#tmplist = cursor.fetchall()[0][0]
-#print(tmplist)
-#manual.append(tmplist)
+cursor = connectDB()
+exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
+cursor.execute(exe)
+tmplist = cursor.fetchall()[0][0]
+print(tmplist)
+manual.append(tmplist)
 
 while True:
     if (len(manual) == 0 and len(auto) == 0):
@@ -128,18 +128,18 @@ while True:
 
         mission = manual.pop(0)
         print(mission)
-        coordinates=[25.351153,55.388386,25.351231,55.388788,25.350955,55.388976,25.350873,55.388606]
-        #coordinates = []
+        #coordinates=[25.351153,55.388386,25.351231,55.388788,25.350955,55.388976,25.350873,55.388606]
+        coordinates = []
         #cursor = connectDB()
-        #exe = """SELECT * FROM public.accounts_mission WHERE mission_id = '""" + \
-        #    str(mission) + "'"
-        #print(exe)
-        #cursor.execute(exe)
-        #tmplist = cursor.fetchall()[0]
-        # print(len(tmplist))
-        mode = 2 #tmplist[1]
-        #for i in range(18, 26, 1):
-        #    coordinates.append(tmplist[i])
+        exe = """SELECT * FROM public.accounts_mission WHERE mission_id = '""" + \
+            str(mission) + "'"
+        print(exe)
+        cursor.execute(exe)
+        tmplist = cursor.fetchall()[0]
+        #print(len(tmplist))
+        mode = tmplist[1]
+        for i in range(18, 26, 1):
+            coordinates.append(tmplist[i])
 
         print(coordinates)
         executeMission(coordinates,mode)
