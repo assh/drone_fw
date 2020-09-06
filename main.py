@@ -141,7 +141,9 @@ while True:
         mode = tmplist[1]
         for i in range(18, 26, 1):
             coordinates.append(tmplist[i])
-            coord.append(coordinates[i])
+        for j in coordinates:
+
+            coord.append(j)
         print(coord)
         executeMission(coord,mode)
 
