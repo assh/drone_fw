@@ -113,7 +113,9 @@ def executeMission(coords,mode):
     
 vehicle = connectDrone()
 #print(vehicle.battery)
-cursor = connectDB()
+con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
+                           host=os.environ.get('DB_HOST'), port=os.environ.get('DB_PORT'))
+cursor = con.cursor()
 exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
 cursor.execute(exe)
 tmplist = cursor.fetchall()[0][0]
@@ -152,7 +154,7 @@ while True:
         exe = """UPDATE public.accounts_mission SET launch_now = false, mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
         print(exe)
         cursor.execute(exe)
-        
+        con.commit()
     elif (len(auto) != 0):
         pass
 
