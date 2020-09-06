@@ -102,7 +102,7 @@ def executeMission(coords,mode):
 
         cmds.upload()
 
-    takeoff(15)
+    #takeoff(15)
     vehicle.mode = VehicleMode("AUTO")
     while vehicle.mode!='AUTO':
         time.sleep(0.2)
@@ -130,6 +130,7 @@ while True:
         print(mission)
         #coordinates=[25.351153,55.388386,25.351231,55.388788,25.350955,55.388976,25.350873,55.388606]
         coordinates = []
+        coord = []
         #cursor = connectDB()
         exe = """SELECT * FROM public.accounts_mission WHERE mission_id = '""" + \
             str(mission) + "'"
@@ -140,9 +141,9 @@ while True:
         mode = tmplist[1]
         for i in range(18, 26, 1):
             coordinates.append(tmplist[i])
-
-        print(coordinates)
-        executeMission(coordinates,mode)
+            coord.append(coordinates[i])
+        print(coord)
+        executeMission(coord,mode)
 
     elif (len(auto) != 0):
         pass
