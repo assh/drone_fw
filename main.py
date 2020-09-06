@@ -76,7 +76,7 @@ def connectDB():
 def executeMission(coords,mode):
     #vehicle = connectDrone()
     wphome = vehicle.location.global_relative_frame
-    if (mode == 2):
+    if (mode == '2'):
 
         cmd0 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0)
         cmd01 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,0,0,0,0,0,0,0)
@@ -112,7 +112,7 @@ def executeMission(coords,mode):
         time.sleep(2)
     
 vehicle = connectDrone()
-print(vehicle.battery)
+#print(vehicle.battery)
 cursor = connectDB()
 exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
 cursor.execute(exe)
