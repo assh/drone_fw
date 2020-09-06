@@ -60,7 +60,7 @@ def takeoff(targetH):
             break
         time.sleep(1)
     print("Target Altitude reached")
-    return None
+    
 
 
 def connectDB():
