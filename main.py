@@ -192,7 +192,9 @@ def executeMission(coords,mode):
         mylist = getLawn(nnlist)
 
         cmdlist = []
+        tmpcoord = mylist.pop(0)
         cmdlist.append(Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,wphome.lat,wphome.lon,wphome.alt))
+        cmdlist.append(Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,tmpcoord[0],tmpcoord[1],wphome.alt))
         cmdlist.append(Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0))
 
         for j in mylist:
