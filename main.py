@@ -119,14 +119,16 @@ cursor = con.cursor()
 
 
 while True:
+    exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
+    cursor.execute(exe)
     try:
-        exe = """SELECT mission FROM public.accounts_launch WHERE drone = 'UAE-DR-0001'"""
-        cursor.execute(exe)
+        
         tmplist = cursor.fetchall()[0][0]
         print(tmplist)
         manual.append(tmplist)
     except:
-        continue
+        print("No MANUAL Launches")
+        
 
     if (len(manual) == 0 and len(auto) == 0):
         print("Waiting")
