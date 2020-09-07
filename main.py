@@ -3,6 +3,7 @@ import time
 import socket
 import exceptions
 import math
+from math import radians, cos, sin, asin, sqrt
 import argparse
 import psycopg2
 from pymavlink import mavutil
@@ -12,6 +13,85 @@ manual = []#['M001207']
 auto = []
 next_date = None
 next_time = None
+
+def getDistance(lat1,lon1,lat2,lon2):
+    R = 6372.8 
+    dLat = radians(lat2 - lat1)
+    dLon = radians(lon2 - lon1)
+    lat1 = radians(lat1)
+    lat2 = radians(lat2)
+
+    a = sin(dLat/2)**2 + cos(lat1)*cos(lat2)*sin(dLon/2)**2
+    c = 2*asin(sqrt(a))
+
+    return R * c
+
+def getLawn(lawn):
+    nlst=[]
+    wlst = []
+    count = 4
+    k = 1
+
+    def getCoords(lst):
+        print lst[0][0],',',lst[0][1]
+        print lst[1][0],',',lst[1][1]
+        print lst[len(lst)-2][0],',',lst[len(lst)-2][1]
+        print lst[len(lst)-1][0],',',lst[len(lst)-1][1]
+        print "New Coordinates"
+        for i in range(2,len(lst)-2):
+            print lst[i][0],',',lst[i][1]
+
+    def sortCoord(home,lawn):
+        temp=1000000
+        for i in range(4):
+            dist=getDistance(home[0],home[1],lawn[i][0],lawn[i][1])
+            if (dist<=temp):
+                temp = dist
+                temlist=lawn[i]
+        lawn.remove(temlist)
+        nlst.append(temlist)
+
+        for i in range(3):
+            temp = 1000000
+            dist=getDistance(nlst[0][0],nlst[0][1],lawn[i][0],lawn[i][1])
+            if (dist<=temp):
+                temp = dist
+                temlist=lawn[i]
+        lawn.remove(temlist)
+        nlst.append(temlist)
+
+
+    nlst.append(lawn[0])
+    nlst.append(lawn[1])
+    
+    for i in range(count-1):
+        perc = (i+1.00)/count
+        dlatt1 = perc*(lawn[3][0]-lawn[0][0])
+        dlont1 = perc*(lawn[3][1]-lawn[0][1])
+        dlatt2 = perc*(lawn[2][0]-lawn[1][0])
+        dlont2 = perc*(lawn[2][1]-lawn[1][1])
+        a = lawn[0][0]+dlatt1
+        b = lawn[0][1]+dlont1
+        x = lawn[1][0]+dlatt2
+        y = lawn[1][1]+dlont2
+        if (k == 1):
+            nlst.append([x,y])
+            nlst.append([a,b])
+        else:
+            nlst.append([a,b])
+            nlst.append([x,y])
+        k = k*-1
+
+    if (count%2 == 0):
+        nlst.append(lawn[3])
+        nlst.append(lawn[2])
+    else:
+        nlst.append(lawn[2])
+        nlst.append(lawn[3])
+    getCoords(nlst)
+    return nlst
+
+    
 
 
 def connectDrone():
@@ -102,6 +182,15 @@ def executeMission(coords,mode):
         cmds.add(cmd6)
 
         cmds.upload()
+    elif (mode == '3'):
+        nnlist = []
+        while (len(coords)>0):
+            tmp = []
+            tmp.append(coords.pop(0))
+            tmp.append(coords.pop(0))
+            nnlist.append(tmp)
+        mylist = getLawn(nnlist)
+
 
     takeoff(15)
     vehicle.mode = VehicleMode("AUTO")
@@ -154,7 +243,7 @@ while True:
             
             coordinates.append(tmplist[i])
         for j in range(8):
-            coord.append(coordinates[j])
+            coord.append(float(coordinates[j]))
         print(coord)
         executeMission(coord,mode)
         exe = """UPDATE public.accounts_mission SET launch_now = false, mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
