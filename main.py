@@ -155,7 +155,7 @@ def connectDB():
 
 def executeMission(coords,mode):
     #vehicle = connectDrone()
-    #wphome = vehicle.location.global_relative_frame
+    wphome = vehicle.location.global_relative_frame
     if (mode == '2'):
 
         cmd0 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0)
@@ -213,7 +213,7 @@ def executeMission(coords,mode):
 
         cmds.upload()
 
-        
+
     takeoff(15)
     vehicle.mode = VehicleMode("AUTO")
     while vehicle.mode!='AUTO':
@@ -245,8 +245,8 @@ while True:
         time.sleep(10)
 
     elif (len(manual) != 0):
-        #vehicle = connectDrone()
-        #print(vehicle.battery)
+        vehicle = connectDrone()
+        print(vehicle.battery)
         mission = manual.pop(0)
         print(mission)
         #coordinates=[25.351153,55.388386,25.351231,55.388788,25.350955,55.388976,25.350873,55.388606]
