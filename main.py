@@ -111,8 +111,7 @@ def executeMission(coords,mode):
         print("Mission executing")
         time.sleep(2)
     
-vehicle = connectDrone()
-print(vehicle.battery)
+
 con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
                            host=os.environ.get('DB_HOST'), port=os.environ.get('DB_PORT'))
 cursor = con.cursor()
@@ -135,7 +134,8 @@ while True:
         time.sleep(10)
 
     elif (len(manual) != 0):
-
+        vehicle = connectDrone()
+        print(vehicle.battery)
         mission = manual.pop(0)
         print(mission)
         #coordinates=[25.351153,55.388386,25.351231,55.388788,25.350955,55.388976,25.350873,55.388606]
