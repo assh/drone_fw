@@ -155,7 +155,7 @@ def connectDB():
 
 def executeMission(coords,mode):
     #vehicle = connectDrone()
-    wphome = vehicle.location.global_relative_frame
+    #wphome = vehicle.location.global_relative_frame
     if (mode == '2'):
 
         cmd0 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0)
@@ -191,7 +191,29 @@ def executeMission(coords,mode):
             nnlist.append(tmp)
         mylist = getLawn(nnlist)
 
+        cmdlist = []
+        cmdlist.append(Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,wphome.lat,wphome.lon,wphome.alt))
+        cmdlist.append(Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0))
 
+        for j in mylist:
+            c1 = j[0]
+            c2 = j[1]
+            cmdlist.append(Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,c1,c2,wphome.alt))
+
+        cmdlist.append(Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,0,0,0,0,0,0,0))   
+        cmdlist.append(Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,0,0,0,0,0,0,0,0,0))
+
+        cmds = vehicle.commands
+        cmds.download()
+        cmds.wait_ready()
+        cmds.clear()
+
+        for j in cmdlist:
+            cmds.add(j)
+
+        cmds.upload()
+
+        
     takeoff(15)
     vehicle.mode = VehicleMode("AUTO")
     while vehicle.mode!='AUTO':
@@ -223,8 +245,8 @@ while True:
         time.sleep(10)
 
     elif (len(manual) != 0):
-        vehicle = connectDrone()
-        print(vehicle.battery)
+        #vehicle = connectDrone()
+        #print(vehicle.battery)
         mission = manual.pop(0)
         print(mission)
         #coordinates=[25.351153,55.388386,25.351231,55.388788,25.350955,55.388976,25.350873,55.388606]
