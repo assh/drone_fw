@@ -214,6 +214,32 @@ def executeMission(coords,mode):
             cmds.add(j)
 
         cmds.upload()
+    elif (mode == '1'):
+
+        cmd0 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0)
+        cmd01 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,0,0,0,0,0,0,0)
+        cmd1 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_WAYPOINT,0,0,0,0,0,0,wphome.lat,wphome.lon,wphome.alt)
+        cmd2 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_LOITER_TURNS,0,0,1,0,0,0,coords[0],coords[1],wphome.alt)
+        cmd3 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_LOITER_TURNS,0,0,1,0,0,0,coords[2],coords[3],wphome.alt)
+        cmd4 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_LOITER_TURNS,0,0,1,0,0,0,coords[4],coords[5],wphome.alt)
+        cmd5 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_LOITER_TURNS,0,0,1,0,0,0,coords[6],coords[7],wphome.alt)
+        cmd6 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,0,0,0,0,0,0,0,0,0)
+        cmds = vehicle.commands
+        cmds.download()
+        cmds.wait_ready()
+
+        cmds.clear()
+        cmds.add(cmd1)
+        cmds.add(cmd2)
+        cmds.add(cmd0)
+        cmds.add(cmd3)
+        cmds.add(cmd4)
+        cmds.add(cmd5)
+        cmds.add(cmd2)
+        cmds.add(cmd01)
+        cmds.add(cmd6)
+
+        cmds.upload()
 
 
     takeoff(15)
