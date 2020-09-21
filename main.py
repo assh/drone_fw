@@ -8,11 +8,18 @@ import argparse
 import psycopg2
 from pymavlink import mavutil
 import os
+from datetime import datetime, date
 
 manual = []#['M001207']
 auto = []
 next_date = None
 next_time = None
+
+def time2second(t):
+    tmp = str(t).split(':')
+    second = int(tmp[0])*3600+int(tmp[1])*60+int(tmp[2])
+    return second
+
 
 def getDistance(lat1,lon1,lat2,lon2):
     R = 6372.8 
@@ -266,7 +273,18 @@ while True:
         manual.append(tmplist)
     except:
         print("No MANUAL Launches")
-        
+    
+
+    exe = """SELECT mode_type, mission_id, date, "time" FROM public.accounts_mission WHERE launch_mode = 'AUTO' and vda = 'UAE-DR-0001' and mission_status = 'On Schedule' ORDER BY date,"time" """
+    cursor.execute(exe)
+    try:
+        tmplist = cursor.fetchall()
+        for i in tmplist:
+            if (i not in auto):
+                auto.append(i)
+    except:
+        print("No AUTO Launches")
+
 
     if (len(manual) == 0 and len(auto) == 0):
         print("Waiting")
@@ -303,7 +321,35 @@ while True:
         print(exe)
         cursor.execute(exe)
         con.commit()
+
+
     elif (len(auto) != 0):
-        pass
+        vehicle = connectDrone()
+        print(vehicle.battery)
+        mission_id = auto.pop(0)
+        mission = mission_id[1]
+        print(mission)
+        coordinates = []
+        coord = []
+        exe = """SELECT * FROM public.accounts_mission WHERE mission_id = '""" + \
+            str(mission) + "'"
+        print(exe)
+        cursor.execute(exe)
+        tmplist = cursor.fetchall()[0]
+        #print(len(tmplist))
+        mode = tmplist[1]
+        print(mode)
+        for i in range(18, 26, 1):
+            
+            coordinates.append(tmplist[i])
+        for j in range(8):
+            coord.append(float(coordinates[j]))
+        print(coord)
+        executeMission(coord,mode)
+        exe = """UPDATE public.accounts_mission SET mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
+        print(exe)
+        cursor.execute(exe)
+        con.commit()
+        
 
     
