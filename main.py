@@ -14,6 +14,7 @@ manual = []#['M001207']
 auto = []
 next_date = None
 next_time = None
+next_mission = 0
 
 def time2second(t):
     tmp = str(t).split(':')
@@ -278,13 +279,31 @@ while True:
     exe = """SELECT mode_type, mission_id, date, "time" FROM public.accounts_mission WHERE launch_mode = 'AUTO' and vda = 'UAE-DR-0001' and mission_status = 'On Schedule' ORDER BY date,"time" """
     cursor.execute(exe)
     try:
+        auto = []
         tmplist = cursor.fetchall()
-        for i in tmplist:
-            if (i not in auto):
-                auto.append(i)
+        auto.extend(tmplist)
+        if (next_mission in auto):
+            auto.remove(next_mission)
+        
     except:
         print("No AUTO Launches")
 
+
+    try:
+        if (next_mission == 0):
+            next_mission = auto.pop(0)
+            print(next_mission)
+            next_date = next_mission[2]
+            next_time = next_mission[3]
+            ntmi = time2second(next_time)-600
+        
+    except:
+        print("Some Error")
+
+
+    currtime = datetime.now().strftime("%H:%M:%S")
+    ctms = time2second(currtime)
+    
 
     if (len(manual) == 0 and len(auto) == 0):
         print("Waiting")
@@ -323,11 +342,12 @@ while True:
         con.commit()
 
 
-    elif (len(auto) != 0):
-        vehicle = connectDrone()
-        print(vehicle.battery)
-        mission_id = auto.pop(0)
-        mission = mission_id[1]
+
+    elif (next_mission != 0 and date.today() == next_date and ntmi < ctms):
+        #vehicle = connectDrone()
+        #print(vehicle.battery)
+        
+        mission = next_mission[1]
         print(mission)
         coordinates = []
         coord = []
@@ -345,11 +365,12 @@ while True:
         for j in range(8):
             coord.append(float(coordinates[j]))
         print(coord)
-        executeMission(coord,mode)
+        #executeMission(coord,mode)
         exe = """UPDATE public.accounts_mission SET mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
         print(exe)
         cursor.execute(exe)
         con.commit()
+        next_mission = 0
         
 
     
