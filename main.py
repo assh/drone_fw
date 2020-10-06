@@ -10,8 +10,17 @@ from pymavlink import mavutil
 import os
 from datetime import datetime, date
 
+from pubnub.callbacks import SubscribeCallback
+from pubnub.enums import PNStatusCategory
+from pubnub.pnconfiguration import PNConfiguration
+from pubnub.pubnub import PubNub
+
+pnconfig = PNConfiguration()
+pnconfig.publish_key = "pub-c-15ec2a5d-d51e-463b-8b47-42ad5658e317"
+pnconfig.uuid = "serverUUID-PUB"
+pubnub = PubNub(pnconfig)
+
 manual = []#['M001207']
-auto = []
 next_date = None
 next_time = None
 next_mission = 0
@@ -161,9 +170,10 @@ def connectDB():
     return curr
 
 
-def executeMission(coords,mode):
+def executeMission(coords,mode,miss):
     #vehicle = connectDrone()
     wphome = vehicle.location.global_relative_frame
+    CHANNEL = str(miss)
     if (mode == '2'):
 
         cmd0 = Command(0,0,0,mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,mavutil.mavlink.MAV_CMD_DO_SET_CAM_TRIGG_DIST,0,0,15,0,0,0,0,0,0)
@@ -256,7 +266,11 @@ def executeMission(coords,mode):
         time.sleep(0.2)
     while vehicle.location.global_relative_frame.alt >2:
         print("Mission executing")
-        time.sleep(2)
+        lat = vehicle.location.global_relative_frame.lat
+        lng = vehicle.location.global_relative_frame.lon
+        the_message = {"lat":lat,"lng":lng}
+        envelope = pubnub.publish().channel(CHANNEL).message(the_message).sync()
+        time.sleep(1)
     
 
 con = psycopg2.connect(database=os.environ.get('DB_NAME'), user=os.environ.get('DB_USER'), password=os.environ.get('DB_PASSWORD'),
@@ -303,7 +317,10 @@ while True:
 
     currtime = datetime.now().strftime("%H:%M:%S")
     ctms = time2second(currtime)
-    
+    vehicle = connectDrone()
+    if (vehicle.battery < 30):
+        vehicle.close()
+        time.sleep(3600)
 
     if (len(manual) == 0 and len(auto) == 0):
         print("Waiting")
@@ -344,8 +361,8 @@ while True:
 
 
     elif (next_mission != 0 and date.today() == next_date and ntmi < ctms):
-        #vehicle = connectDrone()
-        #print(vehicle.battery)
+        vehicle = connectDrone()
+        print(vehicle.battery)
         
         mission = next_mission[1]
         print(mission)
@@ -365,7 +382,7 @@ while True:
         for j in range(8):
             coord.append(float(coordinates[j]))
         print(coord)
-        #executeMission(coord,mode)
+        executeMission(coord,mode)
         exe = """UPDATE public.accounts_mission SET mission_status='Complete' WHERE mission_id = '""" + str(mission) + "'"
         print(exe)
         cursor.execute(exe)
